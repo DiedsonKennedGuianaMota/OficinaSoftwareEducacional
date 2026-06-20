@@ -1,2 +1,0 @@
-# OficinaSoftwareEducacional
-Projetos da disciplina 
