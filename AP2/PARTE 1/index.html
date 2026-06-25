@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aventura Geométrica - Protótipo & EGDD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-bg: #f0f4f8;
+            --header-gradient: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            --card-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+        }
+
+        /* Top Header */
+        header {
+            background: var(--header-gradient);
+            color: white;
+            padding: 20px 40px;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .header-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 26px;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .header-author {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        /* Main Container Layout */
+        .main-layout {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: block;
+        }
+
+        /* Seção do Protótipo do Jogo */
+        .game-section {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-header {
+            border-bottom: 3px solid #e2e8f0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 24px;
+            color: #1e3a8a;
+            margin: 0;
+            display: inline-block;
+        }
+
+        /* HUD Superior do Jogo */
+        .game-hud {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            display: block;
+            border: 1px solid #e2e8f0;
+        }
+
+        .hud-row {
+            display: block;
+            overflow: hidden;
+        }
+
+        .hud-item {
+            float: left;
+            width: 33.33%;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .hud-item span {
+            color: var(--accent-blue);
+        }
+
+        /* Telas das Fases */
+        .phase-container {
+            min-height: 450px;
+            background: #f0fdf4;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            border: 2px dashed #bbf7d0;
+        }
+
+        .instruction-box {
+            background: white;
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--accent-blue);
+        }
+
+        .instruction-box h3 {
+            margin: 0 0 5px 0;
+            font-family: 'Fredoka One', cursive;
+            font-size: 18px;
+            color: #1e3a8a;
+        }
+
+        .instruction-box p {
+            margin: 0;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* FASE 1: GRID DESIGN */
+        .grid-wrapper {
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .grid-board {
+            width: 100%;
+            height: 380px;
+            background: white;
+            border-radius: 16px;
+            border: 4px solid #e2e8f0;
+            padding: 5px;
+            display: block;
+        }
+
+        .grid-row {
+            width: 100%;
+            height: 20%;
+            clear: both;
+        }
+
+        .grid-cell {
+            width: 20%;
+            height: 100%;
+            float: left;
+            border: 1px solid #f1f5f9;
+            border-radius: 8px;
+            position: relative;
+            text-align: center;
+            vertical-align: middle;
+            background-color: #fafafa;
+            transition: background 0.2s;
+        }
+
+        .grid-cell.active-target {
+            background-color: #e0f2fe;
+            border: 2px solid #3b82f6;
+        }
+
+        .cell-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            user-select: none;
+        }
+
+        /* Painel de Controles D-Pad */
+        .controls-wrapper {
+            text-align: center;
+            margin-top: 25px;
+            display: block;
+        }
+
+        .dpad-btn {
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            width: 60px;
+            height: 45px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 5px;
+            box-shadow: 0 4px 0 #cbd5e1;
+            transition: all 0.1s;
+        }
+
+        .dpad-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .btn-check {
+            background: var(--accent-green);
+            color: white;
+            border-color: #059669;
+            box-shadow: 0 4px 0 #059669;
+            width: 90px;
+        }
+
+        /* FASE 2: CAÇA AOS SÓLIDOS DESIGN */
+        .solids-container {
+            width: 100%;
+            display: block;
+            overflow: hidden;
+        }
+
+        .solid-bucket {
+            width: 23%;
+            float: left;
+            margin: 0 1%;
+            background: white;
+            border-radius: 16px;
+            border: 2px dashed #cbd5e1;
+            padding: 15px;
+            min-height: 180px;
+            text-align: center;
+        }
+
+        .solid-bucket h4 {
+            margin: 0 0 10px 0;
+            font-family: 'Fredoka One', cursive;
+            font-size: 15px;
+            color: #1e3a8a;
+        }
+
+        .bucket-items {
+            min-height: 100px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .world-objects-pool {
+            width: 100%;
+            clear: both;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 30px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .pool-item {
+            display: inline-block;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            transition: transform 0.2s;
+        }
+
+        .pool-item:hover {
+            transform: scale(1.05);
+            background: #e2e8f0;
+        }
+
+        /* FASE 3: QUIZ DESIGN */
+        .quiz-card {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .quiz-question {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1e3a8a;
+            margin-bottom: 25px;
+        }
+
+        .quiz-options {
+            display: block;
+        }
+
+        .quiz-opt {
+            display: block;
+            width: 100%;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: left;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-opt:hover {
+            background: #e0f2fe;
+            border-color: #3b82f6;
+        }
+
+        /* Feedback Banner */
+        .feedback-banner {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 5px solid var(--accent-green);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 700;
+            display: none;
+        }
+
+        /* Aba de Documentação Acadêmica */
+        .doc-section {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            padding: 40px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .doc-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 26px;
+            color: #1e3a8a;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+
+        .doc-paragraph {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #334155;
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+
+        .academic-box {
+            background-color: #f8fafc;
+            border-left: 5px solid #3b82f6;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .academic-code {
+            font-weight: bold;
+            color: #1e3a8a;
+            font-size: 15px;
+        }
+
+        .btn-pdf {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #991b1b;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.1s;
+            display: inline-block;
+            margin-bottom: 30px;
+            text-decoration: none;
+        }
+
+        .btn-pdf:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #991b1b;
+        }
+
+        .hidden-phase {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO DO ARQUIVO -->
+    <header>
+        <div class="header-content">
+            <h1 class="header-title">🎨 Aventura Geométrica</h1>
+            <div class="header-author">Desenvolvedor: Diedson Kenned Guiana Mota | Oficina de Software Educacional</div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+
+        <!-- DOWNLOAD DO LAUDO PEDAGÓGICO COMPLETO EM PDF -->
+        <div style="text-align: right;">
+            <a href="EGDD_Aventura_Geometrica_Diedson.pdf" class="btn-pdf" download>📥 Baixar Laudo Completo em PDF</a>
+        </div>
+
+        <!-- AMBIENTE INTERATIVO DO PROTÓTIPO DE JOGO -->
+        <section class="game-section">
+            <div class="section-header">
+                <h2 class="section-title">🕹️ Executável do Protótipo de Aprendizagem</h2>
+            </div>
+
+            <!-- HUD Global do Jogo -->
+            <div class="game-hud">
+                <div class="hud-row">
+                    <div class="hud-item">Estágio Atual: <span id="hud-phase-name">Fase 1 - Onde estou?</span></div>
+                    <div class="hud-item" style="text-align: center;">Pontuação: <span id="hud-score-val">0 Estrelas</span></div>
+                    <div class="hud-item" style="text-align: right;">Tentativas Restantes: <span id="hud-lives-val">❤️❤️❤️</span></div>
+                </div>
+            </div>
+
+            <!-- CONTAINER DINÂMICO DE FASES -->
+            <div class="phase-container">
+                
+                <!-- FASE 1: GRID VIEWPORT -->
+                <div id="phase-1-viewport">
+                    <div class="instruction-box">
+                        <h3>Vá ficar à ESQUERDA da casa.</h3>
+                        <p>O referencial é a casa 🏠. Mova o Geo (👦) até a casinha certa e clique em <em>Estou aqui!</em></p>
+                    </div>
+
+                    <div class="grid-wrapper">
+                        <div class="grid-board" id="matrix-board">
+                            <!-- Renderizado via JavaScript Dinâmico -->
+                        </div>
+                    </div>
+
+                    <div class="controls-wrapper">
+                        <button class="dpad-btn" onclick="moveGeo(-1, 0)">⬆️</button><br><br>
+                        <button class="dpad-btn" onclick="moveGeo(0, -1)">⬅️</button>
+                        <button class="dpad-btn btn-check" onclick="validatePhase1()">✔ OK</button>
+                        <button class="dpad-btn" onclick="moveGeo(0, 1)">➡️</button><br><br>
+                        <button class="dpad-btn" onclick="moveGeo(1, 0)">⬇️</button>
+                    </div>
+                </div>
+
+                <!-- FASE 2: CAÇA SÓLIDOS VIEWPORT -->
+                <div id="phase-2-viewport" class="hidden-phase">
+                    <div class="instruction-box">
+                        <h3>Caça aos Sólidos</h3>
+                        <p>Clique em um objeto do mundo real abaixo para movê-lo até a caixa do sólido com o qual ele se parece.</p>
+                    </div>
+
+                    <div class="solids-container">
+                        <div class="solid-bucket">
+                            <h4>🟢 Esfera</h4>
+                            <div class="bucket-items" id="bucket-esfera"></div>
+                        </div>
+                        <div class="solid-bucket">
+                            <h4>🥫 Cilindro</h4>
+                            <div class="bucket-items" id="bucket-cilindro"></div>
+                        </div>
+                        <div class="solid-bucket">
+                            <h4>🔺 Cone</h4>
+                            <div class="bucket-items" id="bucket-cone"></div>
+                        </div>
+                        <div class="solid-bucket">
+                            <h4>📦 Bloco Retangular</h4>
+                            <div class="bucket-items" id="bucket-bloco"></div>
+                        </div>
+                    </div>
+
+                    <div class="world-objects-pool" id="objects-pool">
+                        <!-- Itens iniciais -->
+                        <div class="pool-item" onclick="assignSolid('Laranja', 'esfera', this)">🍊 Laranja</div>
+                        <div class="pool-item" onclick="assignSolid('Lata de Milho', 'cilindro', this)">🥫 Lata de Milho</div>
+                        <div class="pool-item" onclick="assignSolid('Copo', 'cilindro', this)">🥤 Copo</div>
+                        <div class="pool-item" onclick="assignSolid('Chapéu de Festa', 'cone', this)">🥳 Chapéu de Festa</div>
+                        <div class="pool-item" onclick="assignSolid('Casquinha', 'cone', this)">🍦 Casquinha</div>
+                        <div class="pool-item" onclick="assignSolid('Caixa de Sapato', 'bloco', this)">📦 Caixa de Sapato</div>
+                        <div class="pool-item" onclick="assignSolid('Livro', 'bloco', this)">📘 Livro</div>
+                    </div>
+                </div>
+
+                <!-- FASE 3: QUIZ VIEWPORT -->
+                <div id="phase-3-viewport" class="hidden-phase">
+                    <div class="instruction-box">
+                        <h3>Fase 3 — Faces e formas</h3>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div class="quiz-question">Qual figura geométrica plana representa a face de uma roda de carrinho? ⚙️</div>
+                        <div class="quiz-options">
+                            <button class="quiz-opt" onclick="validatePhase3(true)">🔴 Círculo</button>
+                            <button class="quiz-opt" onclick="validatePhase3(false)">🟩 Quadrado</button>
+                            <button class="quiz-opt" onclick="validatePhase3(false)">Rectangle █ Retângulo</button>
+                            <button class="quiz-opt" onclick="validatePhase3(false)">🔺 Triângulo</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BANNER DE FEEDBACK DINÂMICO -->
+                <div class="feedback-banner" id="game-feedback"></div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO ACADÊMICA: EXIBIÇÃO DIRETA DO DOCUMENTO DE DESIGN (EGDD) -->
+        <section class="doc-section">
+            <h2 class="doc-title">📘 Documento de Design de Jogo Educacional (EGDD)</h2>
+            
+            <h3>1. Alinhamento com a BNCC e Metodologia Curricular</h3>
+            <p class="doc-paragraph">
+                O projeto <strong>Aventura Geométrica</strong> foi estruturado com base nas competências de alfabetização matemática do 1º Ano do Ensino Fundamental. O foco reside na estruturação de habilidades espaciais abstratas, de localização relativa e de categorização topológica de formas bidimensionais e tridimensionais, conforme os códigos organizacionais da BNCC:
+            </p>
+            <div class="academic-box">
+                <span class="academic-code">Habilidade EF01MA11 & EF01MA12:</span> Localização espacial com base em pontos de referência fixos, exigindo raciocínio alocêntrico do estudante.
+            </div>
+            <div class="academic-box">
+                <span class="academic-code">Habilidade EF01MA13 & EF01MA14:</span> Associação de sólidos reais a formas espaciais clássicas e a decomposição de superfícies tridimensionais em suas respectivas representações planas fundamentais.
+            </div>
+
+            <h3>2. Análise Pedagógica Avançada</h3>
+            <p class="doc-paragraph"><strong>Como o jogo promove e consolida o aprendizado?</strong></p>
+            <p class="doc-paragraph">
+                A engenharia mecânica do jogo se apoia na teoria do aprendizado ativo através do erro construtivo. Na Fase 1, se o estudante falhar em mover o avatar para a esquerda sob a perspectiva da casa, o feedback negativo imediato atua sem punição severa, permitindo que a criança recalcule os movimentos baseando-se no vetor de orientação alocêntrico. Isso estimula a inibição cognitiva de reações automáticas baseadas em seu próprio corpo (perspectiva egocêntrica).
+            </p>
+            <p class="doc-paragraph">
+                Na Fase 2 (Caça aos Sólidos), a separação funcional de elementos como copos e caixas em categorias matemáticas puras força a mente do aluno a isolar os atributos geométricos primários dos atributos utilitários do objeto, solidificando as conexões cognitivas necessárias para a formulação de generalizações espaciais duradouras.
+            </p>
+        </section>
+    </div>
+
+    <!-- CÓDIGO LOGICO DE MECÂNICA E GAMEPLAY (JAVASCRIPT) -->
+    <script>
+        // Estado Global da Gameplay
+        let currentPhase = 1;
+        let score = 0;
+        let lives = 3;
+        
+        // Coordenadas do Avatar Geo na Fase 1 (Matriz 5x5 indexada em 0)
+        let geoRow = 0;
+        let geoCol = 0;
+        
+        // Célula Alvo Correta da Fase 1 (À esquerda da casa). Casa está em (1,3), alvo é (1,2)
+        const targetRow = 1;
+        const targetCol = 2;
+
+        // Inicialização do Jogo
+        window.onload = function() {
+            renderMatrix();
+        };
+
+        // Renderizador de Células da Fase 1
+        function renderMatrix() {
+            const board = document.getElementById('matrix-board');
+            board.innerHTML = '';
+            
+            for(let r=0; r<5; r++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'grid-row';
+                
+                for(let c=0; c<5; c++) {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.className = 'grid-cell';
+                    if (r === targetRow && c === targetCol) {
+                        cellDiv.className += ' active-target';
+                    }
+                    
+                    const contentSpan = document.createElement('span');
+                    contentSpan.className = 'cell-content';
+                    
+                    // Inserção dos Elementos Estáticos Conforme imagem 1
+                    if(r === geoRow && c === geoCol) {
+                        contentSpan.innerText = '👦';
+                    } else if(r === 1 && c === 3) {
+                        contentSpan.innerText = '🏠';
+                    } else if(r === 2 && c === 2) {
+                        contentSpan.innerText = '🌳';
+                    } else if(r === 3 && c === 1) {
+                        contentSpan.innerText = '🧸';
+                    } else if(r === 3 && c === 3) {
+                        contentSpan.innerText = '⚽';
+                    }
+                    
+                    cellDiv.appendChild(contentSpan);
+                    rowDiv.appendChild(cellDiv);
+                }
+                board.appendChild(rowDiv);
+            }
+        }
+
+        // Sistema de Movimentação Dinâmica do Avatar Geo
+        function moveGeo(dr, dc) {
+            let nextR = geoRow + dr;
+            let nextC = geoCol + dc;
+            
+            if(nextR >= 0 && nextR < 5 && nextC >= 0 && nextC < 5) {
+                geoRow = nextR;
+                geoCol = nextC;
+                renderMatrix();
+            }
+        }
+
+        // Validador da Fase 1
+        function validatePhase1() {
+            const feedback = document.getElementById('game-feedback');
+            if(geoRow === targetRow && geoCol === targetCol) {
+                score += 4;
+                showFeedback("Excelente! Você posicionou o Geo exatamente à esquerda da casa!", true);
+                setTimeout(() => {
+                    transitionToPhase(2);
+                }, 2000);
+            } else {
+                handleError("Essa não é a posição correta à esquerda da casa. Observe o referencial!");
+            }
+        }
+
+        // Validador da Fase 2 (Caça aos Sólidos)
+        let phase2Matches = 0;
+        function assignSolid(itemName, correctBucket, element) {
+            const bucketElement = document.getElementById('bucket-' + correctBucket);
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'pool-item';
+            itemDiv.style.background = '#e6fffa';
+            itemDiv.innerText = element.innerText;
+            
+            bucketElement.appendChild(itemDiv);
+            element.style.display = 'none';
+            
+            phase2Matches++;
+            score += 2;
+            document.getElementById('hud-score-val').innerText = score + " Estrelas";
+            
+            if(phase2Matches >= 7) {
+                showFeedback("Incrível! Todos os sólidos foram catalogados perfeitamente!", true);
+                setTimeout(() => {
+                    transitionToPhase(3);
+                }, 2000);
+            }
+        }
+
+        // Validador da Fase 3
+        function validatePhase3(isCorrect) {
+            if(isCorrect) {
+                score += 6;
+                showFeedback("Parabéns! O círculo representa perfeitamente a face de uma roda!", true);
+                document.getElementById('hud-score-val').innerText = score + " Estrelas — Concluído!";
+            } else {
+                handleError("A forma selecionada não corresponde à face de uma roda cilíndrica.");
+            }
+        }
+
+        // Gerenciamento de Transição de Estado do Jogo
+        function transitionToPhase(phaseNum) {
+            document.getElementById('game-feedback').style.display = 'none';
+            document.getElementById('phase-1-viewport').className = 'hidden-phase';
+            document.getElementById('phase-2-viewport').className = 'hidden-phase';
+            document.getElementById('phase-3-viewport').className = 'hidden-phase';
+            
+            currentPhase = phaseNum;
+            if(phaseNum === 2) {
+                document.getElementById('hud-phase-name').innerText = "Fase 2 - Caça aos sólidos";
+                document.getElementById('phase-2-viewport').className = '';
+            } else if(phaseNum === 3) {
+                document.getElementById('hud-phase-name').innerText = "Fase 3 - Faces e formas";
+                document.getElementById('phase-3-viewport').className = '';
+            }
+            document.getElementById('hud-score-val').innerText = score + " Estrelas";
+        }
+
+        function showFeedback(text, isSuccess) {
+            const fb = document.getElementById('game-feedback');
+            fb.innerText = text;
+            fb.style.display = 'block';
+            fb.style.background = isSuccess ? '#d1fae5' : '#fee2e2';
+            fb.style.color = isSuccess ? '#065f46' : '#991b1b';
+            fb.style.borderLeft = isSuccess ? '5px solid #10b981' : '5px solid #ef4444';
+        }
+
+        function handleError(msg) {
+            lives--;
+            let hearts = "";
+            for(let i=0; i<lives; i++) hearts += "❤️";
+            if(lives <= 0) hearts = "❌ Sem Vidas";
+            
+            document.getElementById('hud-lives-val').innerText = hearts;
+            showFeedback(msg + " Você perdeu uma tentativa.", false);
+            
+            if(lives <= 0) {
+                setTimeout(() => {
+                    alert("Jogo Reiniciado! Vamos praticar a geometria mais uma vez.");
+                    window.location.reload();
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>
